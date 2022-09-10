@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction, PermissionsBitField, EmbedBuilder } from "discord.js";
-import { DatabaseType } from "../modules/types";
+import { DatabaseType } from "../../modules/types";
 
 module.exports = {
     execute: async (interaction: CommandInteraction, Users: any, Database: DatabaseType) => {
