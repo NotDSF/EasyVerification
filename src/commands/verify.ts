@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
+import { CommandInteraction, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageOptions } from "discord.js";
 import { createHmac } from "crypto";
 import { DatabaseType } from "../modules/types";
 
@@ -11,7 +11,7 @@ module.exports = {
         const ServerInfo = await Database.GetServer(Guild.id);
         if (!ServerInfo) {
             const Embed = new EmbedBuilder()
-                .setTitle("Oops.. We ran into an issue")
+                .setTitle("Verification Error")
                 .setColor("#e75757")
                 .setDescription("This server has not configured the verification bot, they can by running the `/setverifiedrole` command.");
 
@@ -20,7 +20,7 @@ module.exports = {
 
         if (!Guild.roles.cache.get(ServerInfo.VerifiedRole)) {
             const Embed = new EmbedBuilder()
-                .setTitle("Oops.. We ran into an issue")
+                .setTitle("Verification Error")
                 .setColor("#e75757")
                 .setDescription("This server's verified role no longer exists, contact an administrator.");
 
@@ -41,10 +41,11 @@ module.exports = {
             Timestamp: Date.now(),
             ID: interaction.user.id,
             GID: Guild.id,
-            Role: ServerInfo.VerifiedRole
+            Role: ServerInfo.VerifiedRole,
+            LogChannel: ServerInfo.CaptchaLogs
         });
 
-        const Row = new ActionRowBuilder()
+        const Row = new ActionRowBuilder<ButtonBuilder>()
             .addComponents(
                 new ButtonBuilder()
                     .setStyle(ButtonStyle.Link)
@@ -59,10 +60,10 @@ module.exports = {
 
 
         try {
-            // @ts-ignore
-            await interaction.user.send({ ephemeral: true, embeds: [Embed], components: [Row] });
+            await interaction.user.send({ ephemeral: true, embeds: [Embed], components: [Row] } as MessageOptions);
             await interaction.reply({ ephemeral: true, content: "Sent the verification link to your DM's" });
         } catch (er) {
+            console.log(er);
             const Embed = new EmbedBuilder()
                 .setTitle("Verification Error")
                 .setColor("#e75757")

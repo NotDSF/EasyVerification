@@ -13,5 +13,7 @@ datasource db {
 model Servers {
   id            Bytes @id @default(auto()) @map("_id") @db.ObjectId
   VerifiedRole  String?
+  CaptchaLogs   String?
   ServerID      String @unique
+  ServerName    String
 }

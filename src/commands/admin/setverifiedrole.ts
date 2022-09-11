@@ -1,18 +1,14 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, PermissionsBitField, EmbedBuilder } from "discord.js";
+import { CommandInteraction, EmbedBuilder } from "discord.js";
 import { DatabaseType } from "../../modules/types";
 
 module.exports = {
     execute: async (interaction: CommandInteraction, Users: any, Database: DatabaseType) => {
-        // @ts-ignore
-        if (!interaction.member?.permissions.has(PermissionsBitField.Flags.Administrator)) return interaction.reply("You don't have access to this command");
         const Role = interaction.options.get("role", true);
-
-        // @ts-ignore
-        const Result = await Database.AddServerInfo(interaction.guild?.id, Role.role?.id);
+        const Result = await Database.AddServerInfo(interaction.guild?.id as string, Role.role?.id as string, interaction.guild?.name as string);
         if (!Result) {
             const Embed = new EmbedBuilder()
-            .setTitle("Oops.. We ran into an issue")
+            .setTitle("There was an error with configuring")
             .setColor("#e75757")
             .setDescription("We couldn't set the verified role, try again later?");
 
@@ -20,12 +16,13 @@ module.exports = {
         }
 
         const Embed = new EmbedBuilder()
-            .setTitle("Server Configured")
+            .setTitle("Successfully Configured")
             .setColor("#579de7")
-            .setDescription("This server has been successfully configured");
+            .setDescription("This server's verified role has been successfully configured");
 
         interaction.reply({ ephemeral: true, embeds: [Embed] });
     },
+    AdminRequired: true,
     Data: new SlashCommandBuilder()
         .setName("setverifiedrole")
         .setDescription("Set the role that users will recieve once verified.")
