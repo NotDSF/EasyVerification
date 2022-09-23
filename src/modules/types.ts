@@ -10,7 +10,7 @@ interface DatabaseType {
 interface Command {
     name: string,
     AdminRequired?: boolean,
-    execute: (interaction: CommandInteraction, users: any, Database: DatabaseType) => void
+    execute: (interaction: CommandInteraction, users: Map<any, any>, Database: DatabaseType) => void
 }
 
 export { Command, CommandInteraction, DatabaseType }

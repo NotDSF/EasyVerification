@@ -4,7 +4,7 @@ import { createHmac } from "crypto";
 import { DatabaseType } from "../modules/types";
 
 module.exports = {
-    execute: async (interaction: CommandInteraction, Users: any, Database: DatabaseType) => {
+    execute: async (interaction: CommandInteraction, Users: Map<any, any>, Database: DatabaseType) => {
         const Guild = interaction.guild;
         if (!Guild) return;
 
@@ -64,6 +64,8 @@ module.exports = {
             await interaction.reply({ ephemeral: true, content: "Sent the verification link to your DM's" });
         } catch (er) {
             console.log(er);
+            
+            Users.delete(Hashed);
             const Embed = new EmbedBuilder()
                 .setTitle("Verification Error")
                 .setColor("#e75757")

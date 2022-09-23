@@ -36,7 +36,7 @@ function ReadDirectory(name: string) {
 
 ReadDirectory("commands");
 
-if (process.platform === "win32") {
+if (process.platform === "win32" && process.env.TESTING_TOKEN && process.env.TESTING_APPLICATION_ID) {
     process.env.TOKEN = process.env.TESTING_TOKEN;
     process.env.APPLICATION_ID = process.env.TESTING_APPLICATION_ID;
     console.log("You are currently running in development mode!");
@@ -50,17 +50,17 @@ app.get("/v/:id", async (req, res) => {
     const Info = Users.get(req.params.id);
     Users.delete(req.params.id);
 
-    if (!Info) return res.send("Invalid ID, try again?");
+    if (!Info) return res.send("Invalid ID, try running /verify again?");
     if ((Date.now() - Info.Timestamp) / 1000 > 60) return res.send("You took too long to verify, try again?");
 
     const Guild = client.guilds.cache.get(Info.GID);
-    if (!Guild) return res.send("There was an error with completing this captcha");
+    if (!Guild) return res.send("The guild associated with this verification link no longer exists.");
 
     const User = Guild.members.cache.get(Info.ID);
     const Role = Guild.roles.cache.get(Info.Role);
 
     if (!Role || !Role?.editable) {
-        return res.send("There was an error with completing this captcha");
+        return res.send("The role given to verified people in this server is setup incorrectly or missing, contact a staff member.");
     }
 
     User?.roles.add(Info.Role);
